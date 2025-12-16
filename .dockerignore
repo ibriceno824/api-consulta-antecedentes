@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs y archivos temporales
+*.log
+*.csv
+*.png
+*.html
+
+# No incluir estos en la imagen (se montan como volúmenes)
+# cookies.json
+# logs/
+# capturas/
+# html/
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentación
+readme.md
+*.md
+
+# Drivers (undetected_chromedriver los descarga automáticamente)
+drivers/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+

@@ -1,0 +1,30 @@
+# Entornos virtuales
+venv/
+env/
+ENV/
+.VENV/
+
+# Archivos temporales
+__pycache__/
+logs/
+capturas/
+*.py[cod]
+*.log
+*.sqlite3
+*.csv
+*.db
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Capturas o HTML de errores
+*.png
+*.html
+
+# Configuración de IDEs
+.vscode/
+.idea/
+
+# Archivo de cookies (si no deseas subirlo)
+cookies.json

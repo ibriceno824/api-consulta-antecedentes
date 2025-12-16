@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  api-antecedentes:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: consulta-antecedentes-api
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persistir cookies para que no se pierdan al reiniciar
+      - ./cookies.json:/app/cookies.json
+      # Persistir logs
+      - ./logs:/app/logs
+      # Persistir capturas y HTML de debug
+      - ./capturas:/app/capturas
+      - ./html:/app/html
+    environment:
+      - PYTHONUNBUFFERED=1
+      # Agregar más variables de entorno si es necesario
+    restart: unless-stopped
+    # Configuración de recursos (ajustar según necesidades)
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    # Healthcheck para verificar que la API está funcionando
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
