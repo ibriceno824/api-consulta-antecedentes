@@ -40,16 +40,25 @@ def renovar_cookies():
         
         # Cargar cookies existentes ANTES de ir a la página principal
         logger.info("🔄 Cargando cookies existentes...")
+        from core.cookies_utils import filtrar_cookies_expiradas
+        
         cookies = obtener_cookies_desde_env_o_archivo("cookies.json")
+        cookies_validas, cookies_expiradas = filtrar_cookies_expiradas(cookies)
+        
+        if cookies_expiradas:
+            logger.info(f"⚠️ Filtrando {len(cookies_expiradas)} cookies expiradas durante renovación")
 
         driver.delete_all_cookies()
-        for cookie in cookies:
+        for cookie in cookies_validas:
             cookie.pop("sameSite", None)
             cookie.pop("secure", None)
             cookie.pop("httpOnly", None)
             if 'domain' in cookie and 'ministeriodelinterior.gob.ec' not in cookie['domain']:
                 continue
-            driver.add_cookie(cookie)
+            try:
+                driver.add_cookie(cookie)
+            except:
+                pass  # Continuar con las demás cookies
 
         # Ahora ir a la página principal CON las cookies ya cargadas
         driver.get(URL)
@@ -107,16 +116,22 @@ def iniciar_ping_sesion():
                 driver.get("https://certificados.ministeriodelinterior.gob.ec/")
                 time.sleep(2)
 
+                from core.cookies_utils import filtrar_cookies_expiradas
+                
                 cookies = obtener_cookies_desde_env_o_archivo("cookies.json")
+                cookies_validas, cookies_expiradas = filtrar_cookies_expiradas(cookies)
 
                 driver.delete_all_cookies()
-                for cookie in cookies:
+                for cookie in cookies_validas:
                     cookie.pop("sameSite", None)
                     cookie.pop("secure", None)
                     cookie.pop("httpOnly", None)
                     if 'domain' in cookie and 'ministeriodelinterior.gob.ec' not in cookie['domain']:
                         continue
-                    driver.add_cookie(cookie)
+                    try:
+                        driver.add_cookie(cookie)
+                    except:
+                        pass  # Continuar con las demás cookies
 
                 # Ir a la página principal CON las cookies ya cargadas
                 driver.get(URL)

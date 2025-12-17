@@ -54,19 +54,39 @@ def inicializar_driver(headless=True):
 def cargar_cookies(driver, path="cookies.json"):
     """
     Carga cookies desde variable de entorno COOKIES_BASE64 o desde archivo.
+    Filtra automáticamente las cookies expiradas antes de cargarlas.
     """
     try:
+        from core.cookies_utils import filtrar_cookies_expiradas
+        
         # Usar la función utilitaria que lee de variable de entorno o archivo
         cookies = obtener_cookies_desde_env_o_archivo(path)
         
-        for cookie in cookies:
+        # Filtrar cookies expiradas antes de cargarlas
+        cookies_validas, cookies_expiradas = filtrar_cookies_expiradas(cookies)
+        
+        if cookies_expiradas:
+            print(f"⚠️ Filtrando {len(cookies_expiradas)} cookies expiradas: {cookies_expiradas}")
+        
+        if not cookies_validas:
+            raise ValueError("❌ No hay cookies válidas para cargar. Todas están expiradas.")
+        
+        cookies_cargadas = 0
+        for cookie in cookies_validas:
             cookie.pop('sameSite', None)
             cookie.pop('secure', None)
             cookie.pop('httpOnly', None)
             if 'domain' in cookie and 'ministeriodelinterior.gob.ec' not in cookie['domain']:
                 continue
-            driver.add_cookie(cookie)
-        print("✅ Cookies cargadas al navegador.")
+            try:
+                driver.add_cookie(cookie)
+                cookies_cargadas += 1
+            except Exception as e:
+                # Algunas cookies pueden fallar al agregarse (dominio incorrecto, etc.)
+                # Continuar con las demás
+                pass
+        
+        print(f"✅ {cookies_cargadas} cookies válidas cargadas al navegador.")
     except Exception as e:
         print(f"⚠️ No se pudieron cargar cookies: {e}")
         raise

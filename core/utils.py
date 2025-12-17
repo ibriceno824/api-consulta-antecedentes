@@ -53,27 +53,34 @@ def validar_cedula_ecuatoriana(cedula: str) -> bool:
 
 def verificar_expiracion_cookies(path="cookies.json"):
     """
-    Verifica si las cookies existen y están vigentes.
+    Verifica si las cookies existen y hay al menos algunas válidas.
     Lee desde variable de entorno COOKIES_BASE64 o desde archivo.
-    Retorna True si están válidas, False si han expirado o no existen.
+    Retorna True si hay cookies válidas, False si todas están expiradas o no existen.
+    
+    Nota: Algunas cookies pueden estar expiradas, pero si hay cookies válidas
+    (especialmente de sesión sin expiry), se permite continuar.
     """
     try:
+        from core.cookies_utils import filtrar_cookies_expiradas
+        
         # Usar la función utilitaria que lee de variable de entorno o archivo
         cookies = obtener_cookies_desde_env_o_archivo(path)
         
-        ahora = int(time.time())
-        expiradas = []
+        # Filtrar cookies expiradas
+        cookies_validas, cookies_expiradas = filtrar_cookies_expiradas(cookies)
 
-        for cookie in cookies:
-            if "expiry" in cookie and cookie["expiry"] < ahora:
-                expiradas.append(cookie["name"])
+        if cookies_expiradas:
+            print(f"⏰ Cookies expiradas detectadas (se filtrarán): {cookies_expiradas}")
 
-        if expiradas:
-            print(f"⏰ Cookies expiradas detectadas: {expiradas}")
+        if not cookies_validas:
+            print("❌ Todas las cookies están expiradas o no hay cookies válidas.")
             return False
-        else:
-            print("🟢 Cookies válidas y vigentes.")
-            return True
+        
+        # Si hay al menos algunas cookies válidas, permitir continuar
+        print(f"🟢 {len(cookies_validas)} cookies válidas encontradas (de {len(cookies)} total).")
+        if cookies_expiradas:
+            print(f"   ⚠️ {len(cookies_expiradas)} cookies expiradas fueron filtradas automáticamente.")
+        return True
 
     except FileNotFoundError:
         print("⚠️ No se encontraron cookies (ni en variable de entorno ni en archivo).")

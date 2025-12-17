@@ -4,6 +4,7 @@ Utilidades para manejar cookies desde variable de entorno (base64) o archivo.
 import os
 import json
 import base64
+import time
 
 
 def obtener_cookies_desde_env_o_archivo(path_default="cookies.json"):
@@ -49,6 +50,31 @@ def obtener_cookies_desde_env_o_archivo(path_default="cookies.json"):
         f"❌ No se encontraron cookies. "
         f"Define la variable de entorno COOKIES_BASE64 o crea el archivo {path_default}"
     )
+
+
+def filtrar_cookies_expiradas(cookies):
+    """
+    Filtra las cookies expiradas y retorna solo las válidas.
+    
+    Args:
+        cookies: Lista de cookies (dict)
+        
+    Returns:
+        tuple: (cookies_validas, cookies_expiradas)
+    """
+    ahora = int(time.time())
+    cookies_validas = []
+    cookies_expiradas = []
+    
+    for cookie in cookies:
+        if "expiry" in cookie:
+            if cookie["expiry"] < ahora:
+                cookies_expiradas.append(cookie["name"])
+                continue  # Saltar esta cookie expirada
+        # Cookie válida (sin expiry o expiry futuro)
+        cookies_validas.append(cookie)
+    
+    return cookies_validas, cookies_expiradas
 
 
 def guardar_cookies_a_archivo(cookies, path="cookies.json"):
