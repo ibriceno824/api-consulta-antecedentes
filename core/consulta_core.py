@@ -7,6 +7,8 @@ from core.navegador import (
 )
 from core.utils import verificar_expiracion_cookies, cookies_aun_sirven
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 def consultar_antecedentes(cedula: str, motivo: str):
@@ -26,7 +28,8 @@ def consultar_antecedentes(cedula: str, motivo: str):
         # IMPORTANTE: Cargar cookies ANTES del primer GET, igual que en cookies.py
         # Primero navegar a cualquier página del dominio para establecer el contexto
         driver.get("https://certificados.ministeriodelinterior.gob.ec/")
-        time.sleep(2)
+        # Esperar que la página esté lista (más rápido que sleep fijo)
+        WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
         
         # Cargar cookies ANTES de ir a la página principal
         print("🔄 Cargando cookies ANTES de acceder a la página principal...")
@@ -34,7 +37,8 @@ def consultar_antecedentes(cedula: str, motivo: str):
         
         # Ahora sí, ir a la página principal CON las cookies ya cargadas
         driver.get("https://certificados.ministeriodelinterior.gob.ec/gestorcertificados/antecedentes/")
-        time.sleep(5)  # Esperar más tiempo para que cargue completamente
+        # Esperar que la página cargue (reducido de 5 a 3 segundos, pero espera inteligente)
+        WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
 
         # Verificar si hay bloqueo de Cloudflare
         page_source_lower = driver.page_source.lower()
@@ -98,7 +102,7 @@ def consultar_antecedentes(cedula: str, motivo: str):
         while reintento < max_reintentos:
             try:
                 print(f"⏳ Esperando campo de motivo... (intento {reintento + 1})")
-                esperar_elemento(driver, "txtMotivo", timeout=35)
+                esperar_elemento(driver, "txtMotivo", timeout=25)  # Reducido de 35 a 25 segundos
                 break
             except:
                 reintento += 1
@@ -108,7 +112,7 @@ def consultar_antecedentes(cedula: str, motivo: str):
                     if boton.is_displayed() and boton.is_enabled():
                         boton.click()
                         print("🔁 Reintentando click en 'Siguiente' (motivo)")
-                        time.sleep(2)
+                        time.sleep(1)  # Reducido de 2 a 1 segundo
                     else:
                         print("❌ Botón 'Siguiente' no está disponible para nuevo clic.")
                 except:
@@ -128,13 +132,15 @@ def consultar_antecedentes(cedula: str, motivo: str):
         while reintento < max_reintentos:
             click_boton_por_texto(driver, "Siguiente")
             print(f"⌛ Esperando resultado... (intento {reintento + 1})")
-            time.sleep(7)
+            # Usar WebDriverWait en lugar de sleep fijo - más rápido cuando el elemento aparece antes
             try:
+                WebDriverWait(driver, 8).until(
+                    lambda d: d.find_element(By.ID, "hdAntecedent").get_attribute("value")
+                )
                 resultado = driver.find_element(By.ID, "hdAntecedent").get_attribute("value")
                 if resultado:
                     print(f"📄 Resultado obtenido: {resultado}")
                     return resultado.strip()
-                
             except:
                 print("⚠️ Resultado no encontrado aún.")
             reintento += 1

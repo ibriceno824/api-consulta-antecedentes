@@ -1,0 +1,59 @@
+[
+    {
+        "domain": "certificados.ministeriodelinterior.gob.ec",
+        "expiry": 1797470470,
+        "httpOnly": false,
+        "name": "cookieconsent_status",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "dismiss"
+    },
+    {
+        "domain": ".ministeriodelinterior.gob.ec",
+        "httpOnly": false,
+        "name": "incap_ses_278_2860759",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "gTNBcqrkeybUgdVa+6fbA2oFQmkAAAAANzplFniR+2ZgTjacvPNt+Q=="
+    },
+    {
+        "domain": ".ministeriodelinterior.gob.ec",
+        "expiry": 1797404148,
+        "httpOnly": true,
+        "name": "visid_incap_2860759",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "S8JdXvszSTaYBTizeab+2moFQmkAAAAAQkIPAAAAAACAsRnBAZt1vSJvtawsw6S3RnSZzzDuWh4k"
+    },
+    {
+        "domain": "certificados.ministeriodelinterior.gob.ec",
+        "expiry": 1765934534,
+        "httpOnly": true,
+        "name": "incap_wrt_760",
+        "path": "/",
+        "sameSite": "None",
+        "secure": true,
+        "value": "igVCaQAAAACa4RkEGQAI+AUQj4zygBEYxouIygYgAiiAi4jKBjABqk4XK2Fv4JeLd64ekFgToQ=="
+    },
+    {
+        "domain": ".ministeriodelinterior.gob.ec",
+        "httpOnly": false,
+        "name": "incap_ses_241_2860759",
+        "path": "/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "BfLPFthhomAn0S/grzRYA4AFQmkAAAAA0SmItw3e614z8cUYOFveEQ=="
+    },
+    {
+        "domain": ".certificados.ministeriodelinterior.gob.ec",
+        "httpOnly": false,
+        "name": "emHash",
+        "path": "/gestorcertificados/",
+        "sameSite": "Lax",
+        "secure": false,
+        "value": "fmdlbat4q4l7cjub0a4nbdmba1"
+    }
+]

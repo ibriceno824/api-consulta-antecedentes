@@ -86,8 +86,12 @@ def cookies_aun_sirven(driver):
     Verifica si las cookies cargadas permiten acceder al formulario.
     Recarga la página, cierra modales y busca el campo de cédula.
     """
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+    
     driver.get("https://certificados.ministeriodelinterior.gob.ec/gestorcertificados/antecedentes/")
-    time.sleep(5)  # Esperar más tiempo para que la página cargue completamente
+    # Esperar que la página cargue (reducido de 5 a 3 segundos, pero espera inteligente)
+    WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
 
     # Verificar si hay bloqueo de Cloudflare
     if "error 17" in driver.page_source.lower() or "incapsula" in driver.page_source.lower() or "access denied" in driver.page_source.lower():
@@ -105,28 +109,21 @@ def cookies_aun_sirven(driver):
             if boton.text.strip().lower() == "aceptar":
                 boton.click()
                 print("✅ Modal cerrado durante validación de cookies.")
-                time.sleep(2)  # Esperar después de cerrar modal
+                time.sleep(1)  # Reducido de 2 a 1 segundo
                 break
     except:
         pass  # Si no hay modal, continuar
 
-    # Buscar el campo de cédula con varios intentos
-    max_intentos = 3
-    for intento in range(max_intentos):
-        try:
-            elemento = driver.find_element(By.ID, "txtCi")
-            if elemento.is_displayed():
-                print("✅ Campo de cédula detectado. Cookies válidas.")
-                return True
-        except:
-            if intento < max_intentos - 1:
-                print(f"⏳ Esperando campo de cédula... (intento {intento + 1}/{max_intentos})")
-                time.sleep(2)
-            else:
-                print("❌ No se encontró el campo de cédula después de varios intentos.")
-                return False
-    
-    return False
+    # Buscar el campo de cédula con WebDriverWait (más eficiente que múltiples intentos con sleep)
+    try:
+        WebDriverWait(driver, 8).until(
+            EC.visibility_of_element_located((By.ID, "txtCi"))
+        )
+        print("✅ Campo de cédula detectado. Cookies válidas.")
+        return True
+    except:
+        print("❌ No se encontró el campo de cédula después de esperar.")
+        return False
 
 
 def log_descarga_certificado(exito: bool, mensaje: str = "", archivo="logs/log_consultas.csv"):

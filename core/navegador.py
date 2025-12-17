@@ -96,6 +96,6 @@ def click_boton_por_texto(driver, texto_boton, timeout=15):
         if texto_boton.lower() in boton.text.lower():
             boton.click()
             print(f"✅ Click en botón '{texto_boton}'")
-            time.sleep(1)
+            time.sleep(0.5)  # Reducido de 1 a 0.5 segundos
             return
     raise Exception(f"Botón con texto '{texto_boton}' no encontrado")
