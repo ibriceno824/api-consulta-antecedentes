@@ -80,6 +80,10 @@ RUN chmod -R 755 /app
 # Exponer puerto
 EXPOSE 8000
 
-# Comando por defecto
-CMD ["python", "main.py"]
+# Healthcheck (opcional pero recomendado)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:8000/docs || exit 1
+
+# Comando por defecto - usar uvicorn directamente
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
