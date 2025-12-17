@@ -5,6 +5,7 @@ import os
 import time
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+from core.cookies_utils import obtener_cookies_desde_env_o_archivo
 
 def guardar_log_csv(cedula: str, motivo: str, resultado: str, exito: bool, archivo="logs/log_consultas.csv"):
     ahora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -53,15 +54,12 @@ def validar_cedula_ecuatoriana(cedula: str) -> bool:
 def verificar_expiracion_cookies(path="cookies.json"):
     """
     Verifica si las cookies existen y están vigentes.
+    Lee desde variable de entorno COOKIES_BASE64 o desde archivo.
     Retorna True si están válidas, False si han expirado o no existen.
     """
-    if not os.path.exists(path):
-        print("⚠️ El archivo de cookies no existe.")
-        return False
-
     try:
-        with open(path, "r", encoding="utf-8") as f:
-            cookies = json.load(f)
+        # Usar la función utilitaria que lee de variable de entorno o archivo
+        cookies = obtener_cookies_desde_env_o_archivo(path)
         
         ahora = int(time.time())
         expiradas = []
@@ -77,6 +75,9 @@ def verificar_expiracion_cookies(path="cookies.json"):
             print("🟢 Cookies válidas y vigentes.")
             return True
 
+    except FileNotFoundError:
+        print("⚠️ No se encontraron cookies (ni en variable de entorno ni en archivo).")
+        return False
     except Exception as e:
         print(f"❌ Error al verificar cookies: {e}")
         return False

@@ -6,6 +6,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from core.logger import logger
+from core.cookies_utils import obtener_cookies_desde_env_o_archivo, guardar_cookies_a_archivo
 
 URL = "https://certificados.ministeriodelinterior.gob.ec/gestorcertificados/antecedentes/"
 PING_INTERVALO = 600          # Cada 10 minutos hace ping
@@ -39,8 +40,7 @@ def renovar_cookies():
         
         # Cargar cookies existentes ANTES de ir a la página principal
         logger.info("🔄 Cargando cookies existentes...")
-        with open("cookies.json", "r", encoding="utf-8") as f:
-            cookies = json.load(f)
+        cookies = obtener_cookies_desde_env_o_archivo("cookies.json")
 
         driver.delete_all_cookies()
         for cookie in cookies:
@@ -64,8 +64,7 @@ def renovar_cookies():
 
         # Guardar cookies actualizadas
         nuevas = driver.get_cookies()
-        with open("cookies.json", "w", encoding="utf-8") as f:
-            json.dump(nuevas, f, indent=4, ensure_ascii=False)
+        guardar_cookies_a_archivo(nuevas, "cookies.json")
         logger.info(f"✅ Cookies renovadas automáticamente. Guardadas {len(nuevas)} nuevas cookies.")
         return True
 
@@ -108,8 +107,7 @@ def iniciar_ping_sesion():
                 driver.get("https://certificados.ministeriodelinterior.gob.ec/")
                 time.sleep(2)
 
-                with open("cookies.json", "r", encoding="utf-8") as f:
-                    cookies = json.load(f)
+                cookies = obtener_cookies_desde_env_o_archivo("cookies.json")
 
                 driver.delete_all_cookies()
                 for cookie in cookies:

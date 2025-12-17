@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import undetected_chromedriver as uc
+from core.cookies_utils import obtener_cookies_desde_env_o_archivo
 
 
 
@@ -51,9 +52,13 @@ def inicializar_driver(headless=True):
     return driver
 
 def cargar_cookies(driver, path="cookies.json"):
+    """
+    Carga cookies desde variable de entorno COOKIES_BASE64 o desde archivo.
+    """
     try:
-        with open(path, 'r', encoding='utf-8') as file:
-            cookies = json.load(file)
+        # Usar la función utilitaria que lee de variable de entorno o archivo
+        cookies = obtener_cookies_desde_env_o_archivo(path)
+        
         for cookie in cookies:
             cookie.pop('sameSite', None)
             cookie.pop('secure', None)
@@ -61,7 +66,7 @@ def cargar_cookies(driver, path="cookies.json"):
             if 'domain' in cookie and 'ministeriodelinterior.gob.ec' not in cookie['domain']:
                 continue
             driver.add_cookie(cookie)
-        print("🍪 Cookies cargadas.")
+        print("✅ Cookies cargadas al navegador.")
     except Exception as e:
         print(f"⚠️ No se pudieron cargar cookies: {e}")
         raise

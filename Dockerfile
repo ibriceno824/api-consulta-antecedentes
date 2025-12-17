@@ -10,6 +10,11 @@ ENV PYTHONUNBUFFERED=1 \
     DEBIAN_FRONTEND=noninteractive \
     DISPLAY=:99
 
+# Variable de entorno para cookies (opcional, puede pasarse al ejecutar)
+# Si no se define, se leerá desde cookies.json
+# ARG COOKIES_BASE64
+# ENV COOKIES_BASE64=${COOKIES_BASE64}
+
 # Instalar dependencias del sistema para Chrome y Selenium
 RUN apt-get update && apt-get install -y \
     wget \
